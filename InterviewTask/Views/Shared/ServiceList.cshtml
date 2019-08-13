@@ -1,0 +1,85 @@
+﻿@using InterviewTask.Services;
+@using HelperServiceModels.Models;
+
+@model IEnumerable<HelperServiceModel>
+@{
+    var currentHour = 11;
+}
+
+<!-- Create your cards here.  One has been provided as a template for use in your loop based on the results contained within your model -->
+
+<section>
+    <div class="container">
+        <div class="row">
+            <!-- Marie Curie Helper Service card -->
+            @foreach (HelperServiceModel service in Model)
+            {
+
+                string hours = @ServiceExtensions.OpeningHours(service);
+
+                if (string.IsNullOrWhiteSpace(hours))
+                    hours = "No opening times found for this service.";
+
+                string stateClass = "bg-color-donation-orange";
+                if (!ServiceExtensions.IsOpen(ServiceExtensions.TodaysHours(service), currentHour))
+                    stateClass = "bg-color-light-grey ";
+
+                <div class="block promomanualblock col-md-4 col-sm-12">
+                    <article class="card @stateClass">
+                        <div class="card__main">
+                            <!-- Card title -->
+                            <header class="card__header">
+                                <h3 class="card__header__h">@service.Title</h3>
+                            </header>
+                            <div style="min-height: 25px;">
+                                @*Normally would not have inline css*@
+                                <span id="weather_@service.Id"></span>
+                            </div>
+                            <hr>
+                            <div class="card__description mb-2">
+                                <p class="mb-0">
+                                    @service.Description
+                                </p>
+                                <div class="card__arrow">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 42" width="20" height="30" aria-hidden="true" role="img">
+                                        <title>Arrow / view article icon</title>
+                                        <path fill="none"
+                                              stroke="#000"
+                                              stroke-linecap="round"
+                                              stroke-miterlimit="10"
+                                              stroke-width="3"
+                                              d="M1.9 1c4.8 4.1 6.6 7.3 10.6 11.2 2.3 2.2 6.4 6.5 6.5 9.7-2.1 6-4.6 6.8-9.1 11.3C8.5 34.8 2.7 39.6 1 41"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <!-- Contact details -->
+                            <p class="lead text-center">@service.TelephoneNumber</p>
+                            <hr>
+                            <!-- Opening hours information -->
+                            <p class="lead text-center">@hours</p>
+                        </div>
+                        <a class="card__link--overlay" href="//www.mariecurie.org.uk/help/nursing-services" rel="bookmark" title="Nursing services">
+                            <span class="sr-only">@service.Title</span>
+                        </a>
+                        <input type="button" data-target="@service.Id" style="z-index: 0;" onclick="javascript: getWeather('@service.Id'); return false;" value="Get Weather">
+                    </article>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<script type="text/javascript">
+//Generally would not include javscript functions in page.
+    function getWeather(serviceId) {
+        //This could show more detailed info
+        $.ajax(
+        {
+            url: '@Url.Action("WeatherData", "Home")?Id=' + serviceId, success: (function (result) {
+                var genralWeather = JSON.parse(result);
+                $('#weather_' + serviceId).html(genralWeather.weather[0].main);
+            })
+        })
+    }
+
+</script>
