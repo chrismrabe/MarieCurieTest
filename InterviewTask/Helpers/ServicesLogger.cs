@@ -1,23 +1,22 @@
-﻿using System;
-using System.IO;
-using System.Net;
-using System.Web;
+﻿using log4net;
+using log4net.Config;
 
 namespace InterviewTask.Helpers
 {
-    //Will use log4net if have time to change.
-    public static class ServicesLogger
+    public class ServicesLogger
     {
-        static string path = HttpContext.Current.Server.MapPath("~/App_Data/log.txt");
 
-        public static void Log(string message)
+        private static readonly ILog logger = LogManager.GetLogger(typeof(ServicesLogger));
+
+        public ServicesLogger()
         {
-            using (StreamWriter streamWriter = new StreamWriter(path))
-            {
-                var host = Dns.GetHostEntry(Dns.GetHostName());
-                streamWriter.WriteLine($"{message} : {DateTime.Now} : {host}");
-                streamWriter.Close();
-            }
+            XmlConfigurator.Configure();
         }
+
+        public ILog Logger()
+        {
+            return logger;
+        }
+
     }
 }

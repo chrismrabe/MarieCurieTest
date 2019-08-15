@@ -1,9 +1,9 @@
 ﻿using HelperServiceModels.Models;
-using InterviewTask.Helpers;
 using System;
 using System.Collections.Generic;
+using log4net;
 
-namespace InterviewTask.Services
+namespace HelperServices.Services
 {
 
     //Ideally all data Objects moved to another project.
@@ -12,7 +12,6 @@ namespace InterviewTask.Services
     {
         internal static List<HelperServiceModel> Create()
         {
-            ServicesLogger.Log("Calling Services");
 
             var weekdayOpeningTimes = new List<int> { 9, 17 };
             var alternativeOpeningTime = new List<int> { 8, 12 };

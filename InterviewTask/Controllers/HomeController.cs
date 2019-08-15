@@ -1,12 +1,14 @@
 ﻿using HelperServiceModels.Models;
 using InterviewTask.Helpers;
-using InterviewTask.Services;
+using HelperServices.Services;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Web.Mvc;
+using log4net;
+using System.Web.Script.Serialization;
 
 namespace InterviewTask.Controllers
 {
@@ -16,69 +18,66 @@ namespace InterviewTask.Controllers
          * Prepare your opening times here using the provided HelperServiceRepository class.       
          */
 
+        private ILog logger = new ServicesLogger().Logger();
+
         public ActionResult Index()
         {
             try
             {
-                HelperServiceRepository repo = new HelperServiceRepository();
-
-                IEnumerable<HelperServiceModel> services = repo.Get();
-
+                IEnumerable<HelperServiceModel> services = new HelperServiceRepository().Get();
                 ViewData["Services"] = services;
-
                 return View("Index", services);
             } catch (Exception ex)
             {
-                ServicesLogger.Log(ex.Message);
-                return View("Index");
+                logger.Error(ex.Message);
             }
-
+            return View("Index");
         }
         
         public JsonResult WeatherData(Guid Id)
         {
-            //Wouldn't this be better handled purely on client side?
+            //Wouldn't this be better handled on client side? If we had the city or lat/long, we could pass that through direct to openW.
+            logger.Info("Calling the weather service.");
 
-            ServicesLogger.Log("Calling Weather Service");
+            string responseData = string.Empty;
 
-            HelperServiceRepository repo = new HelperServiceRepository();
+            HelperServiceModel thisService = new HelperServiceRepository().Get(Id); ;
 
-            string responseData = "";
-
-            try
+            if(thisService == null)
             {
-                //Ideally we would be retrieving only one entry based on ID.
+                string message = $"Service with ID: {Id} not found";
+                logger.Error(message);
+                responseData = new JavaScriptSerializer().Serialize(new { error = message });
+                return Json(responseData, JsonRequestBehavior.AllowGet);
+            }
 
-                //Ideally all data access would be in separate project
+            var request = (HttpWebRequest)WebRequest.Create($"http://api.openweathermap.org/data/2.5/weather?q={thisService.City}&APPID=e016391b92e54bfc19e468e0c7a5b8ec");
+            request.Method = "GET";
+            var response = (HttpWebResponse)request.GetResponse();
 
-                IEnumerable<HelperServiceModel> services = repo.Get();
-                HelperServiceModel thisService = new HelperServiceModel();
-
-                foreach (var service in services)
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                try
                 {
-                    if (service.Id == Id)
+                    JsonSerializer serializer = new JsonSerializer();
+                    using (Stream dataStream = response.GetResponseStream())
                     {
-                        thisService = service;
+                        using (var sreader = new StreamReader(dataStream))
+                        {
+                            responseData = sreader.ReadToEnd();
+                        }
                     }
                 }
-
-                var request = (HttpWebRequest)WebRequest.Create($"http://api.openweathermap.org/data/2.5/weather?q={thisService.City}&APPID=e016391b92e54bfc19e468e0c7a5b8ec");
-                request.Method = "GET";
-                var response = (HttpWebResponse)request.GetResponse();
-
-                JsonSerializer serializer = new JsonSerializer();
-                using (Stream dataStream = response.GetResponseStream())
+                catch (Exception ex)
                 {
-                    using (var sreader = new StreamReader(dataStream))
-                    {
-                        responseData = sreader.ReadToEnd();
-                    }
+                    logger.Error(ex.Message);
+                    responseData = new JavaScriptSerializer().Serialize(new { error = ex.Message });
                 }
-            } catch (Exception ex)
+
+            } else
             {
-
-                ServicesLogger.Log(ex.Message);
-
+                logger.Error("Service not found");
+                responseData = new JavaScriptSerializer().Serialize(new { error = "Trouble loading the weather" });
             }
 
             return Json(responseData, JsonRequestBehavior.AllowGet);

@@ -1,48 +1,43 @@
 ﻿using HelperServiceModels.Models;
-using InterviewTask.Helpers;
 using System;
 using System.Collections.Generic;
 
-namespace InterviewTask.Services
+namespace HelperServices.Services
 {
     public static class ServiceExtensions
     {
-
         //TODO: Unit tests
 
         public static string OpeningHours(HelperServiceModel service)
         {
-            try
+            if(service == null)
             {
-                int currentHour = DateTime.Now.Hour;
-                
-                List<int> openingHours = TodaysHours(service);
+                return string.Empty;
+            }
 
-                if (openingHours != null)
+            int currentHour = DateTime.Now.Hour;
+
+            List<int> openingHours = TodaysHours(service);
+            if(openingHours == null)
+            {
+                return string.Empty;
+            }
+
+            if (!IsOpen(openingHours, currentHour))
+            {
+
+                if (openingHours[0] > currentHour)
                 {
-                    if (!IsOpen(openingHours, currentHour))
-                    {
-
-                        if (openingHours[0] > currentHour)
-                        {
-                            return $"Opens at {FormatTime(openingHours[0])}";
-                        }
-
-                        return NextOpenDay(service);
-
-                    }
-                    else
-                    {
-                        return $"Open until {FormatTime(openingHours[1])}";
-                    }
+                    return $"Opens at {FormatTime(openingHours[0])}";
                 }
-            }
-            catch (Exception ex)
-            {
-                ServicesLogger.Log(ex.ToString());
-            }
 
-            return "";
+                return NextOpenDay(service);
+
+            }
+            else
+            {
+                return $"Open until {FormatTime(openingHours[1])}";
+            }
 
         }
 
@@ -136,12 +131,11 @@ namespace InterviewTask.Services
 
                 }
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
-                ServicesLogger.Log(ex.Message);
             }
 
-            return "";
+            return string.Empty;
 
         }
 
@@ -160,26 +154,17 @@ namespace InterviewTask.Services
 
         public static bool IsOpen(List<int> openingHours, int currentHour)
         {
-            try
+            if (openingHours == null || openingHours[0] == 0)
             {
-                if (openingHours == null || openingHours[0] == 0)
-                {
-                    return false;
-                }
-
-                if (currentHour >= openingHours[0] && currentHour < openingHours[1])
-                {
-                    return true;
-                }
+                return false;
             }
-            catch (Exception ex)
+
+            if (currentHour >= openingHours[0] && currentHour < openingHours[1])
             {
-                ServicesLogger.Log(ex.Message);
+                return true;
             }
 
             return false;
-
         }
-
     }
 }

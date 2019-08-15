@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using HelperServiceModels.Models;
 
-namespace InterviewTask.Services
+namespace HelperServices.Services
 {
     public class HelperServiceRepository : IHelperServiceRepository
     {

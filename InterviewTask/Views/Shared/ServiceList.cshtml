@@ -1,9 +1,9 @@
-﻿@using InterviewTask.Services;
+﻿@using InterviewTask.Helpers;
 @using HelperServiceModels.Models;
-
 @model IEnumerable<HelperServiceModel>
 @{
-    var currentHour = 11;
+    //Oops, left a little debug in here.
+    var currentHour = DateTime.Now.Hour;
 }
 
 <!-- Create your cards here.  One has been provided as a template for use in your loop based on the results contained within your model -->
@@ -14,15 +14,18 @@
             <!-- Marie Curie Helper Service card -->
             @foreach (HelperServiceModel service in Model)
             {
+                string hours = ServiceHelpers.OpeningHours(service);
 
-                string hours = @ServiceExtensions.OpeningHours(service);
-
-                if (string.IsNullOrWhiteSpace(hours))
+                if (string.IsNullOrWhiteSpace(hours)) {
                     hours = "No opening times found for this service.";
+                }
 
                 string stateClass = "bg-color-donation-orange";
-                if (!ServiceExtensions.IsOpen(ServiceExtensions.TodaysHours(service), currentHour))
+                if (!ServiceHelpers.IsOpen(ServiceHelpers.TodaysHours(service), currentHour))
+                {
                     stateClass = "bg-color-light-grey ";
+                }
+                
 
                 <div class="block promomanualblock col-md-4 col-sm-12">
                     <article class="card @stateClass">

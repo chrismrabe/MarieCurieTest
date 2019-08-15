@@ -45,6 +45,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -130,12 +133,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\ServiceHelpers.cs" />
     <Compile Include="Helpers\ServicesLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\HelperServiceFactory.cs" />
-    <Compile Include="Services\HelperServiceRepository.cs" />
-    <Compile Include="Services\IHelperServiceRepository.cs" />
-    <Compile Include="Services\ServiceExtentions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
@@ -162,12 +162,16 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
@@ -196,6 +200,10 @@
     <ProjectReference Include="..\HelperServiceModels\HelperServiceModels.csproj">
       <Project>{42887eec-dccc-4ed7-8e86-a4ed70cce7ee}</Project>
       <Name>HelperServiceModels</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HelperServices\HelperServices.csproj">
+      <Project>{1d3cbec1-988c-40a5-a58e-0601a0de92e2}</Project>
+      <Name>HelperServices</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

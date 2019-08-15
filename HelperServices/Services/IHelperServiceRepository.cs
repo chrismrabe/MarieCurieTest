@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using HelperServiceModels.Models;
 
-namespace InterviewTask.Services
+namespace HelperServices.Services
 {
     interface IHelperServiceRepository
     {
