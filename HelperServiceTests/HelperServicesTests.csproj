@@ -64,6 +64,10 @@
       <Project>{1d3cbec1-988c-40a5-a58e-0601a0de92e2}</Project>
       <Name>HelperServices</Name>
     </ProjectReference>
+    <ProjectReference Include="..\InterviewTask\InterviewTask.csproj">
+      <Project>{f170b98a-622d-4289-9a5f-70512ba7fa3f}</Project>
+      <Name>InterviewTask</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
